@@ -6,6 +6,7 @@ require 'fixtures/game'
 
 class TexticleTest < Test::Unit::TestCase
   context "after extending ActiveRecord::Base" do
+    # before(:all)
     ActiveRecord::Base.extend(Texticle)
     class NotThere < ActiveRecord::Base; end
 
@@ -82,6 +83,7 @@ class TexticleTest < Test::Unit::TestCase
   end
 
   context "after extending an ActiveRecord::Base subclass" do
+    # before(:all)
     class ::GameFail < Game; end
 
     setup do
