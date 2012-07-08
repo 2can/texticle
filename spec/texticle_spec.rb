@@ -41,7 +41,7 @@ class TexticleTest < Test::Unit::TestCase
       end
     end
 
-    context "when dealing with related models" do
+    context "when finding models based on searching a related model" do
       setup do
         @qc = WebComic.create :name => "Questionable Content", :author => "Jeph Jaques"
         @jw = WebComic.create :name => "Johnny Wander", :author => "Ananth & Yuko"
@@ -69,8 +69,14 @@ class TexticleTest < Test::Unit::TestCase
 
       should "look in the related model with nested searching syntax" do
         assert_equal [@jw], WebComic.joins(:characters).advanced_search(:characters => {:description => 'tall'})
-        assert_equal [@pa, @jw, @qc].sort, WebComic.joins(:characters).advanced_search(:characters => {:description => 'anger'}).sort
+        assert_equal [@pa, @jw, @qc, @qc].sort, WebComic.joins(:characters).advanced_search(:characters => {:description => 'anger'}).sort
         assert_equal [@pa, @qc].sort, WebComic.joins(:characters).advanced_search(:characters => {:description => 'crude'}).sort
+      end
+
+
+      should "handle grouping and counting well" do
+        assert_equal({ @qc.id => 2, @jw.id => 1, @pa.id => 1 }, Character.group(:web_comic_id).advanced_search(description: 'anger').count)
+        assert_equal({ @qc.id => 2, @jw.id => 1, @pa.id => 1 }, Character.advanced_search(description: 'anger').group(:web_comic_id).count)
       end
     end
   end
